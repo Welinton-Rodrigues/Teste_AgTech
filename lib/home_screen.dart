@@ -28,7 +28,8 @@ final Box _userBox = Hive.box('userBox');
 //logica da tela
 
 void refreshItems() async{
-  final data = _userService.getUsers();{
+  final data = await _userService.getUsers();// await adicionado 
+  {
     setState(() {
       _items = data;
       
@@ -37,19 +38,29 @@ void refreshItems() async{
 }
 
 // deletar e recarregar
+//Correção - estava faltando uma chave no bloco deleteAndRefresh
 void _deleteAndRefresh(itemKey) async{
   await _userService.deleteUser(itemKey);
-
-
   if(mounted)ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Usuario Deletado com Sucesso')),);
+   refreshItems();
+}
 
 @override
   void initState() {
     super.initState();
     refreshItems();
   }
+//Adicionei o metodo dispose para limpar os controllers
+
+    @override
+  void dispose() {
+    _emailController.dispose();
+    _senhaController.dispose();
+    super.dispose();
+  }
 
 //logica do formulario para cadastrar usuarios
+//Correção - logica do formulario estava duplicada e a parte visual estava fora do bloco de código
 
   void _showForm(BuildContext ctx, int? itemKey) {
     if (itemKey != null) {
@@ -59,22 +70,8 @@ void _deleteAndRefresh(itemKey) async{
     } else {
       _emailController.text = '';
       _senhaController.text = '';
-    }
-  void _showForm(BuildContext ctx, int? itemKey) {
-    if (itemKey != null) {
-      final existingUser = _items.firstWhere((element) => element['key'] == itemKey);
-      _emailController.text = existingUser['email'];
-      _senhaController.text = existingUser['senha'];
-    } else {
-      _emailController.text = '';
-      _senhaController.text = '';
-    }
-
-
-
-//Logica de desmonstração do botao pra aprecer o formulario 
-
- showModalBottomSheet(
+    
+showModalBottomSheet(
       context: ctx,
       elevation: 5,
       isScrollControlled: true,
@@ -114,12 +111,12 @@ void _deleteAndRefresh(itemKey) async{
       ),
     );
   } 
+  }
+
+//Logica de desmonstração do botao pra aprecer o formulario 
+//Correção - metodo widget Build estava com o começo duplicado
 
   @override
-  Widget build(BuildContext context) {
-    // TODO: implement build
-    throw UnimplementedError();
-  }} @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('CRUD com Serviços')),
@@ -148,7 +145,5 @@ void _deleteAndRefresh(itemKey) async{
         },
       ),
     );
-  };
-}
-
+  }
 }
