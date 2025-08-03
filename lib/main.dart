@@ -31,7 +31,7 @@ runApp(const MyApp());
       debugShowCheckedModeBanner: false,
       theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
       useMaterial3: false),
-      home: const HomeScreen()
+      home: HomeScreen()// const removido
      );
 
      
